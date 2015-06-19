@@ -1,0 +1,557 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; documentation Tuto_Nginx 0.1</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="top" title="documentation Tuto_Nginx 0.1" href="index.html" />
+    <link rel="prev" title="Welcome to Tuto_Nginx’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Tuto_Nginx’s documentation!"
+             accesskey="P">précédent</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">documentation Tuto_Nginx 0.1</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Dans ce chapitre, nous allons voir comment installer le serveur web Nginx sur une distribution Debian 8.
+Nous verrons comment installer celui-ci depuis son code source et non depuis le paquet présent sur les dépots, et ce, pour disposer de la dernière version disponible.</p>
+<p>Pour faire l&#8217;installation depuis les sources, nous aurons besoin de certains modules.</p>
+<div class="section" id="gcc-compilateur">
+<h2>GCC - Compilateur.<a class="headerlink" href="#gcc-compilateur" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour vérifier que celui-ci est présent sur notre distribution, nous pouvons lancer la commande suivante:</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">GCC va permettre de compiler plusieurs langages, tel que: C, C++, Java, Ada, FORTRAN, ...</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>gcc
+</pre></div>
+</div>
+<p>Si nous récupérons la sortie suivante, le compilateur est bien installé:</p>
+<div class="highlight-bash"><div class="highlight"><pre>gcc: fatal error: no input files
+compilation terminated.
+</pre></div>
+</div>
+<p>Par contre, si nous récupérons la sortie suivante, il faudra installer le compilateur:</p>
+<div class="highlight-bash"><div class="highlight"><pre>~bash: gcc: comand not found
+</pre></div>
+</div>
+<p>Voici les comandes à lancer pour l&#8217;installer:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># yum groupinstall &quot;Development Tools&quot;</span>
+</pre></div>
+</div>
+<p>ou</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># apt-get install build-essentials</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pcre-perl-compatible-regular-expression">
+<h2>PCRE - Perl Compatible Regular Expression.<a class="headerlink" href="#pcre-perl-compatible-regular-expression" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Cette librairie est requise pour l&#8217;installation de Nginx.
+Les modules &#8220;Rewrite&#8221; et &#8220;HTTP Core&#8221; utilisent cette librairie pour la syntax des expressions regulières.
+2 paquets sont requis:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>pcre</li>
+<li>pcre-devel</li>
+</ol>
+</div></blockquote>
+<p>On va installer ces 2 paquets:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># yum install pcre pcre-devel</span>
+
+<span class="c"># apt-get install libpcre3 libpcre3-dev</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="zlib-compression">
+<h2>Zlib - Compression.<a class="headerlink" href="#zlib-compression" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Ce paquet est requis pour l&#8217;utilisation de gzip.
+2 paquets sont requis:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>zlib1g</li>
+<li>zlib1g-dev</li>
+</ol>
+</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># yum install zlib zlib-devel</span>
+
+<span class="c"># apt-get install zlib1g zlib1g-dev</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="openssl">
+<h2>OpenSSL<a class="headerlink" href="#openssl" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Cette librairie permet de servir des pages web securisées.
+2 paquets sont requis:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>openssl</li>
+<li>openssl-dev</li>
+</ol>
+</div></blockquote>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># yum install openssl openssl-devel</span>
+
+<span class="c"># apt-get install openssl opensll-dev</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Lors de l&#8217;installation sur Debian 8, openssl-dev n&#8217;etait pas présent.</p>
+</div>
+<p>Nous pouvons maintenant installer Nginx depuis les sources.</p>
+</div>
+<div class="section" id="telecharger-nginx">
+<h2>Télécharger Nginx.<a class="headerlink" href="#telecharger-nginx" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Tout d&#8217;abord, on vérifie la version stable actuelle depuis le site <a class="reference external" href="http://www.nginx.org">Nginx</a>.</p>
+<p>Au moment où nous écrivons ce tutoriel, la version stable est la 1.8.0, pour la télécharger, il suffit de lancer la commande suivante:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>mkdir src <span class="o">&amp;&amp;</span> <span class="nb">cd </span>src
+<span class="nv">$ </span>wget http://nginx.org/download/nginx-1.8.0.tar.gz
+--2015-06-17 15:00:46--  http://nginx.org/download/nginx-1.8.0.tar.gz
+Résolution de nginx.org <span class="o">(</span>nginx.org<span class="o">)</span>… 206.251.255.63, 2606:7100:1:69::3f
+Connexion à nginx.org <span class="o">(</span>nginx.org<span class="o">)</span><span class="p">|</span>206.251.255.63<span class="p">|</span>:80… connecté.
+requête HTTP transmise, en attente de la réponse… <span class="m">200</span> OK
+Taille : <span class="m">832104</span> <span class="o">(</span>813K<span class="o">)</span> <span class="o">[</span>application/octet-stream<span class="o">]</span>
+Sauvegarde en : « nginx-1.8.0.tar.gz »
+
+nginx-1.8.0.tar.gz                       100%<span class="o">[=============================</span>&gt;<span class="o">]</span> 812,60K   376KB/s   ds 2,2s
+
+2015-06-17 15:00:48 <span class="o">(</span><span class="m">376</span> KB/s<span class="o">)</span> — « nginx-1.8.0.tar.gz » sauvegardé <span class="o">[</span>832104/832104<span class="o">]</span>
+</pre></div>
+</div>
+<p>Ensuite, nous allons extraire l&#8217;archive dans le dossier courant:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>tar zxvf nginx-1.8.0.tar.gz
+</pre></div>
+</div>
+<p>Nous allons à présent, configurer le processus de compilation pour que le binaire soit parfaitement compatible avec notre OS.</p>
+</div>
+<div class="section" id="les-options-de-configuration">
+<h2>Les options de configuration.<a class="headerlink" href="#les-options-de-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Il y a habituellement 3 étapes lorsque l&#8217;on installe une application depuis les sources:</p>
+<blockquote>
+<div><ul class="simple">
+<li>La configuration</li>
+<li>La compilation</li>
+<li>L&#8217;installation</li>
+</ul>
+</div></blockquote>
+<p>L&#8217;étape de configuration permet la séléction d&#8217;options qui ne seront plus éditables après l&#8217;installation. Il est donc fortement recommandé de suivre les étapes si nous ne voulons pas avoir des surprises plus tard, comme des modules inexistants ou des fichiers au mauvais endroit.</p>
+<div class="section" id="pour-une-installation-par-defaut">
+<h3>Pour une installation par défaut<a class="headerlink" href="#pour-une-installation-par-defaut" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd </span>nginx-1.8.0/
+
+<span class="c"># ./configure</span>
+<span class="c"># make</span>
+<span class="c"># make install</span>
+</pre></div>
+</div>
+<p>Le dossier d&#8217;installation sera, par défaut, <code class="docutils literal"><span class="pre">/usr/local/nginx</span></code>.
+Pour avoir un aperçu des options possible lors de la configuration, on peut lancer la commande suivante:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./configure --help
+</pre></div>
+</div>
+</div>
+<div class="section" id="l-option-prefix">
+<h3>L&#8217;option &#8211;prefix.<a class="headerlink" href="#l-option-prefix" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Durant la configuration, une attention particulière doit être porté à l&#8217;option <code class="docutils literal"><span class="pre">--prefix</span></code>.
+C&#8217;est l&#8217;emplacement où va être installé Nginx, par défaut, <code class="docutils literal"><span class="pre">/usr/local/nginx</span></code>.
+Le problème avec cet emplacement, sera lors d&#8217;un upgrade de Nginx, la nouvelle installation va écraser les anciens fichiers de configuration.
+Il est donc recommandé d&#8217;utiliser un prefix pour chaque version:</p>
+<div class="highlight-bash"><div class="highlight"><pre>./configure --prefix<span class="o">=</span>/usr/local/nginx-1.8.0
+</pre></div>
+</div>
+<p>En complément, pour pouvoir faire des changements simple lors d&#8217;un upgrade de version, est de créer un lien symbolique <code class="docutils literal"><span class="pre">/usr/local/nginx</span></code> qui va pointer sur <code class="docutils literal"><span class="pre">/usr/local/nginx-1.8.0</span></code>.
+Une fois l&#8217;upgrade effectué, il suffit de modifier le lien pour le faire pointer sur <code class="docutils literal"><span class="pre">/usr/local/nginx-newer.verion</span></code>.
+Ce qui va permettre au script <code class="docutils literal"><span class="pre">init</span></code> d&#8217;utiliser à chaque fois la dernière version de Nginx.</p>
+</div>
+</div>
+<div class="section" id="erreurs-lors-de-la-configuration">
+<h2>Erreurs lors de la configuration<a class="headerlink" href="#erreurs-lors-de-la-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Dans certains cas, la comande de configuration peut échouer. Dans la plupart des cas, ces erreurs peuvent provenir d&#8217;un chemin non spécifié ou manquant, ou de modules/paquets requis manquant.</p>
+<p>Dans ce cas, il faudra procéder attentivement à certaines vérifications pour être sûr que l&#8217;application pourra être compilé.
+On peut également consulter le fichier <code class="docutils literal"><span class="pre">objs/autoconf.err</span></code> pour plus de détails sur les erreurs de compilation.
+Ce fichier est généré pendant le processus de configuration et fera apparaître l&#8217;endroit où le processus a échoué.</p>
+<div class="section" id="s-assurer-de-l-installation-des-pre-requis">
+<h3>S&#8217;assurer de l&#8217;installation des pre-requis.<a class="headerlink" href="#s-assurer-de-l-installation-des-pre-requis" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Il y a au minimum 4 pre-requis:</p>
+<blockquote>
+<div><ul class="simple">
+<li>GCC</li>
+<li>PCRE</li>
+<li>zlib</li>
+<li>OpenSSL</li>
+</ul>
+</div></blockquote>
+<p>Les 3 derniers sont fournis en 2 paquets distinct: la librairie et les sources de developement.</p>
+<p>Un autre erreurs peut venir du fait que le script de configuration ne peut trouver les fichiers de ces modules.</p>
+<p>Lors du lancement de la configuration, on peut ajouter le chemin:</p>
+<div class="highlight-bash"><div class="highlight"><pre>./configure <span class="o">[</span>...<span class="o">]</span> --with-openssl<span class="o">=</span>/usr/lib64
+</pre></div>
+</div>
+<p>On peut également s&#8217;assurer des droits d&#8217;accées aux dossier/fichiers.</p>
+</div>
+</div>
+<div class="section" id="lancer-la-configuration">
+<h2>Lancer la configuration<a class="headerlink" href="#lancer-la-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous allons lancer la configuration par défaut avec juste un prefix différent:</p>
+<div class="highlight-bash"><div class="highlight"><pre>./configure --prefix<span class="o">=</span>/usr/local/nginx-1.8.0
+</pre></div>
+</div>
+<p>Normallement, la configuration doit se passer sans encombre, si non, voir les chapitres précédent.</p>
+</div>
+<div class="section" id="compilation-et-installation">
+<h2>Compilation et installation.<a class="headerlink" href="#compilation-et-installation" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Après le succès de la configuration on peut lancer la compilation.
+Pour lancer cette compilation, il faut lancer la commande <code class="docutils literal"><span class="pre">make</span></code> dans le dossier source du projet:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>make
+</pre></div>
+</div>
+<p>Sur la Debian 8, <code class="docutils literal"><span class="pre">make</span></code> n&#8217;est pas installé par défaut. Il suffit de lancer le gestionnaire de paquet:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># apt-get install make</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Après lancement de <code class="docutils literal"><span class="pre">make</span></code> une erreur de permissions apparaît sur les fichiers contenus dans le dossier <code class="docutils literal"><span class="pre">objs/</span></code>. Il suffit de faire un <code class="docutils literal"><span class="pre">chown</span> <span class="pre">-R</span> <span class="pre">&lt;user&gt;:&lt;group&gt;</span> <span class="pre">objs/</span></code></p>
+</div>
+<p>Si la compilation a réussi, on devrait avoir la sortie suivante:</p>
+<div class="highlight-bash"><div class="highlight"><pre>make<span class="o">[</span>1<span class="o">]</span>: Leaving directory <span class="s1">&#39;[path]/src/nginx-1.8.0&#39;</span>
+</pre></div>
+</div>
+<p>On peut maintenant lancer l&#8217;installation de Nginx.
+On doit lancer cette commande avec les privilèges <code class="docutils literal"><span class="pre">root</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># make install</span>
+</pre></div>
+</div>
+<p>Il ne devrait pas y avoir d&#8217;erreur durant l&#8217;installation.</p>
+</div>
+<div class="section" id="creation-du-lien-symbolique">
+<h2>Création du lien symbolique.<a class="headerlink" href="#creation-du-lien-symbolique" title="Lien permanent vers ce titre">¶</a></h2>
+<p>On va créer un lien symbolique comme dit plus haut, voici la commande:</p>
+<div class="highlight-bash"><div class="highlight"><pre>ln -s /usr/local/nginx-1.8.0 /usr/local/nginx
+</pre></div>
+</div>
+<p>Donne:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># cd /usr/local</span>
+<span class="c"># ls -al</span>
+...
+lrwxrwxrwx  <span class="m">1</span> root staff   <span class="m">22</span> juin  <span class="m">17</span> 18:19 nginx -&gt; /usr/local/nginx-1.8.0
+drwxr-sr-x  <span class="m">6</span> root staff <span class="m">4096</span> juin  <span class="m">17</span> 18:18 nginx-1.8.0
+...
+</pre></div>
+</div>
+</div>
+<div class="section" id="demarrer-et-arreter-le-daemon">
+<h2>Démarrer et arreter le daemon.<a class="headerlink" href="#demarrer-et-arreter-le-daemon" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour démarrer Nginx, il suffit de lancer la commande suivante:</p>
+<div class="highlight-bash"><div class="highlight"><pre>/usr/local/nginx/sbin/nginx
+</pre></div>
+</div>
+<p>Si le daemon est déjà en cours, un message d&#8217;erreur apparait:</p>
+<div class="highlight-bash"><div class="highlight"><pre>....
+nginx: <span class="o">[</span>emerg<span class="o">]</span> <span class="nb">bind</span><span class="o">()</span> to 0.0.0.0:80 failed <span class="o">(</span>98: Address already in use<span class="o">)</span>
+nginx: <span class="o">[</span>emerg<span class="o">]</span> still could not <span class="nb">bind</span><span class="o">()</span>
+</pre></div>
+</div>
+<p>On peut aussi vérifier que le daemon est en cours en lançant la commande suivante:</p>
+<div class="highlight-bash"><div class="highlight"><pre>netstat -laputen <span class="p">|</span> grep 80
+tcp        <span class="m">0</span>      <span class="m">0</span> 0.0.0.0:80              0.0.0.0:*               LISTEN      <span class="m">0</span>          <span class="m">83055</span>       10609/nginx
+</pre></div>
+</div>
+<p>Lorsque le daemon est en cours, on peut lancer les commandes suivantes:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Commande</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>nginx -s stop</td>
+<td>Stop le daemon immédiatement</td>
+</tr>
+<tr class="row-odd"><td>nginx -s quit</td>
+<td>Stop le daemon élégament</td>
+</tr>
+<tr class="row-even"><td>nginx -s reopen</td>
+<td>Re-ouvre les fichiers de log</td>
+</tr>
+<tr class="row-odd"><td>nginx -s reload</td>
+<td>Relance la configuration</td>
+</tr>
+</tbody>
+</table>
+<p>Lorsque l&#8217;on démarre, arrête, ou n&#8217;importe quel des commandes précédentes, le daemon va vérifier la configuration. Si la configuration n&#8217;est pas bonne la commande va échouer, même si nous voulons arreter le daemon.</p>
+<p>La manière forte pour arrêter la processus est d&#8217;utiliser <code class="docutils literal"><span class="pre">kill</span></code> ou <code class="docutils literal"><span class="pre">killall</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># killall nginx</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="tester-la-configuration">
+<h2>Tester la configuration.<a class="headerlink" href="#tester-la-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Le script <code class="docutils literal"><span class="pre">nginx</span></code> permet avec l&#8217;option <code class="docutils literal"><span class="pre">-t</span></code> de tester la configuration en cours. Ce qui permet après un changement de la configuration de voir si une erreur a été insérer avant de relancer le daemon.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>/usr/local/nginx/sbin/nginx -t
+nginx: the configuration file /usr/local/nginx-1.8.0/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/nginx-1.8.0/conf/nginx.conf <span class="nb">test </span>is successful
+</pre></div>
+</div>
+<p>Par contre, il est fortement recomandé de ne pas travailler directement sur le fichier de configuration en production.
+Il est préférable de créer un fichier de configuration test situé dans un dossier séparé, comme notre dossier perso, <code class="docutils literal"><span class="pre">/home/&lt;mon_login&gt;/test.conf</span></code>. On peut, de ce fait, tester notre copie de configuration au lieu du fichier de configuration lui-même:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>.nginx -t -c /home/&lt;mon_login&gt;/test.conf
+</pre></div>
+</div>
+<p>On peut donc, après avoir validé que la configuration est bonne, remplacer la configuration actuelle par la nouvalle:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>cp -i /home/&lt;mon_login&gt;/test.conf /usr/local/nginx/conf/nginx.conf
+
+cp: erase <span class="s1">&#39;nginx.conf&#39;</span> ? yes
+<span class="nv">$ </span>./nginx -s reload
+</pre></div>
+</div>
+</div>
+<div class="section" id="ajouter-nginx-en-tant-que-service-systeme">
+<h2>Ajouter Nginx en tant que service système.<a class="headerlink" href="#ajouter-nginx-en-tant-que-service-systeme" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Pour plus de facilité, nous allons rendre controllable Nginx comme une commande standard et l&#8217;ajouter au demarrage sytème ainsi qu&#8217;à l&#8217;arrêt.</p>
+<p>Tout d&#8217;abord, il faut arrêter le script:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># kill `cat /usr/local/nginx/logs/nginx.pid`</span>
+</pre></div>
+</div>
+<div class="section" id="creation-du-script-init-pour-sysvinit">
+<h3>Création du script init pour sysVinit.<a class="headerlink" href="#creation-du-script-init-pour-sysvinit" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># vim /etc/init.d/nginx</span>
+</pre></div>
+</div>
+<p>Voici ce qu&#8217;il faut écrire:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#!/bin/bash</span>
+
+<span class="c">### BEGIN INIT INFO</span>
+<span class="c"># Provides:                             nginx</span>
+<span class="c"># Required-Start:               $all</span>
+<span class="c"># Require-Stop:                 $all</span>
+<span class="c"># Default-Start:                2 3 4 5</span>
+<span class="c"># Default-Stop:                 0 1 6</span>
+<span class="c"># Short-Description:    starts the nginx web server</span>
+<span class="c"># Description:                  starts nginx using start-stop-daemon</span>
+<span class="c">### END INIT INFO</span>
+
+<span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+<span class="nv">DAEMON</span><span class="o">=</span>/usr/local/nginx/sbin/nginx
+<span class="nv">NAME</span><span class="o">=</span>nginx
+<span class="nv">DESC</span><span class="o">=</span>nginx
+
+<span class="nb">test</span> -x <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">exit </span>0
+
+<span class="c"># Include nginx defaults if available</span>
+<span class="k">if</span> <span class="o">[</span> -f /etc/defaults/nginx <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+        . /etc/defaults/nginx
+<span class="k">fi</span>
+
+<span class="nb">set</span> -e
+
+. /lib/lsb/init-functions
+
+<span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+        start<span class="o">)</span>
+                <span class="nb">echo</span> -n <span class="s2">&quot;Starting </span><span class="nv">$DESC</span><span class="s2">: &quot;</span>
+                start-stop-daemon --start --quiet --pidfile /usr/local/nginx/logs/<span class="nv">$NAME</span>.pid --exec <span class="nv">$DAEMON</span> -- <span class="nv">$DAEMON_OPTS</span> <span class="o">||</span> <span class="nb">true</span>
+<span class="nb">                echo</span> <span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">.&quot;</span>
+                <span class="p">;;</span>
+        stop<span class="o">)</span>
+                <span class="nb">echo</span> -n <span class="s2">&quot;Stopping </span><span class="nv">$DESC</span><span class="s2">: &quot;</span>
+                start-stop-daemon --stop --quiet --pidfile /usr/local/nginx/logs/<span class="nv">$NAME</span>.pid --exec <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">true</span>
+<span class="nb">                echo</span> <span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">.&quot;</span>
+                <span class="p">;;</span>
+        restart<span class="p">|</span>force-reload<span class="o">)</span>
+                <span class="nb">echo</span> -n <span class="s2">&quot;Restarting </span><span class="nv">$DESC</span><span class="s2">: &quot;</span>
+                start-stop-daemon --stop --quiet --pidfile /usr/local/nginx/logs/<span class="nv">$NAME</span>.pid --exec <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">true</span>
+<span class="nb">                </span>sleep 1
+                start-stop-daemon --start --quiet --pidfile /usr/local/nginxlogs/<span class="nv">$NAME</span>.pid --exec <span class="nv">$DAEMON</span> -- <span class="nv">$DAEMON_OPTS</span> <span class="o">||</span> <span class="nb">true</span>
+<span class="nb">                echo</span> <span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">.&quot;</span>
+                <span class="p">;;</span>
+        reload<span class="o">)</span>
+                <span class="nb">echo</span> -n <span class="s2">&quot;Reloading </span><span class="nv">$DESC</span><span class="s2"> configuration: &quot;</span>
+                start-stop-daemon --stop --signal HUP --quiet --pidfile /usr/local/nginx/logs/<span class="nv">$NAME</span>.pid --exec <span class="nv">$DAEMON</span> <span class="o">||</span> <span class="nb">true</span>
+<span class="nb">                echo</span> <span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">.&quot;</span>
+                <span class="p">;;</span>
+        status<span class="o">)</span>
+                status_of_proc -p /usr/local/nginx/logs/<span class="nv">$NAME</span>.pid <span class="s2">&quot;</span><span class="nv">$DAEMON</span><span class="s2">&quot;</span> nginx <span class="o">&amp;&amp;</span> <span class="nb">exit </span><span class="m">0</span> <span class="o">||</span> <span class="nb">exit</span> <span class="nv">$?</span>
+                <span class="p">;;</span>
+        *<span class="o">)</span>
+                <span class="nv">N</span><span class="o">=</span>/etc/init.d/<span class="nv">$NAME</span>
+                <span class="nb">echo</span> <span class="s2">&quot;Usage: </span><span class="nv">$N</span><span class="s2"> {start|stop|restart|reload|force-reload|status}&quot;</span> &gt;<span class="p">&amp;</span>2
+                <span class="nb">exit </span>1
+                <span class="p">;;</span>
+<span class="k">esac</span>
+
+<span class="nb">exit </span>0
+</pre></div>
+</div>
+</div>
+<div class="section" id="creation-du-script-de-demarrage-pour-systemd">
+<h3>Création du script de démarrage pour systemd.<a class="headerlink" href="#creation-du-script-de-demarrage-pour-systemd" title="Lien permanent vers ce titre">¶</a></h3>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># vim /lib/systemd/system/nginx.service</span>
+
+<span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>A high performance web server and a reverse proxy server
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">PIDFile</span><span class="o">=</span>/usr/local/nginx/logs/nginx.pid
+<span class="nv">ExecStartPre</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -t -q -g <span class="s1">&#39;daemon on; master_process on;&#39;</span>
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -g <span class="s1">&#39;daemon on; master_process on;&#39;</span>
+<span class="nv">ExecReload</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -g <span class="s1">&#39;daemon on; master_process on;&#39;</span> -s reload
+<span class="nv">ExecStop</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -s quit
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</pre></div>
+</div>
+<p>On vérifie le bon fonctionnement de notre script:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># systemctl status nginx</span>
+● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded <span class="o">(</span>/lib/systemd/system/nginx.service<span class="p">;</span> disabled<span class="o">)</span>
+   Active: inactive <span class="o">(</span>dead<span class="o">)</span>
+</pre></div>
+</div>
+<p>On demarre notre service:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># systemctl start nginx</span>
+</pre></div>
+</div>
+<p>On vérifie:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c"># systemctl status nginx</span>
+● nginx.service - A high performance web server and a reverse proxy server
+   Loaded: loaded <span class="o">(</span>/lib/systemd/system/nginx.service<span class="p">;</span> disabled<span class="o">)</span>
+   Active: active <span class="o">(</span>running<span class="o">)</span> since jeu. 2015-06-18 01:49:54 CEST<span class="p">;</span> 43s ago
+  Process: <span class="m">11505</span> <span class="nv">ExecStart</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -g daemon on<span class="p">;</span> master_process on<span class="p">;</span> <span class="o">(</span><span class="nv">code</span><span class="o">=</span>exited, <span class="nv">status</span><span class="o">=</span>0/SUCCESS<span class="o">)</span>
+  Process: <span class="m">11504</span> <span class="nv">ExecStartPre</span><span class="o">=</span>/usr/local/nginx/sbin/nginx -t -q -g daemon on<span class="p">;</span> master_process on<span class="p">;</span> <span class="o">(</span><span class="nv">code</span><span class="o">=</span>exited, <span class="nv">status</span><span class="o">=</span>0/SUCCESS<span class="o">)</span>
+Main PID: <span class="m">11508</span> <span class="o">(</span>nginx<span class="o">)</span>
+   CGroup: /system.slice/nginx.service
+                   ├─11508 nginx: master process /usr/local/nginx/sbin/nginx -g daemon on<span class="p">;</span> master_process on<span class="p">;</span>
+                   └─11509 nginx: worker process
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#gcc-compilateur">GCC - Compilateur.</a></li>
+<li><a class="reference internal" href="#pcre-perl-compatible-regular-expression">PCRE - Perl Compatible Regular Expression.</a></li>
+<li><a class="reference internal" href="#zlib-compression">Zlib - Compression.</a></li>
+<li><a class="reference internal" href="#openssl">OpenSSL</a></li>
+<li><a class="reference internal" href="#telecharger-nginx">Télécharger Nginx.</a></li>
+<li><a class="reference internal" href="#les-options-de-configuration">Les options de configuration.</a><ul>
+<li><a class="reference internal" href="#pour-une-installation-par-defaut">Pour une installation par défaut</a></li>
+<li><a class="reference internal" href="#l-option-prefix">L&#8217;option &#8211;prefix.</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#erreurs-lors-de-la-configuration">Erreurs lors de la configuration</a><ul>
+<li><a class="reference internal" href="#s-assurer-de-l-installation-des-pre-requis">S&#8217;assurer de l&#8217;installation des pre-requis.</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lancer-la-configuration">Lancer la configuration</a></li>
+<li><a class="reference internal" href="#compilation-et-installation">Compilation et installation.</a></li>
+<li><a class="reference internal" href="#creation-du-lien-symbolique">Création du lien symbolique.</a></li>
+<li><a class="reference internal" href="#demarrer-et-arreter-le-daemon">Démarrer et arreter le daemon.</a></li>
+<li><a class="reference internal" href="#tester-la-configuration">Tester la configuration.</a></li>
+<li><a class="reference internal" href="#ajouter-nginx-en-tant-que-service-systeme">Ajouter Nginx en tant que service système.</a><ul>
+<li><a class="reference internal" href="#creation-du-script-init-pour-sysvinit">Création du script init pour sysVinit.</a></li>
+<li><a class="reference internal" href="#creation-du-script-de-demarrage-pour-systemd">Création du script de démarrage pour systemd.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Sujet précédent</h4>
+  <p class="topless"><a href="index.html"
+                        title="Chapitre précédent">Welcome to Tuto_Nginx&#8217;s documentation!</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Installation.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Saisissez un mot clef ou un nom de module, classe ou fonction.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Aurelazy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/Installation.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

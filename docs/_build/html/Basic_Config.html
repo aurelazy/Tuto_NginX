@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration basique de Nginx &mdash; documentation Tuto_Nginx 0.1</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <link rel="top" title="documentation Tuto_Nginx 0.1" href="index.html" />
+    <link rel="prev" title="Installation" href="Installation.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Installation.html" title="Installation"
+             accesskey="P">précédent</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">documentation Tuto_Nginx 0.1</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configuration-basique-de-nginx">
+<h1>Configuration basique de Nginx<a class="headerlink" href="#configuration-basique-de-nginx" title="Lien permanent vers ce titre">¶</a></h1>
+<p>Dans ce chapitre, nous verrons comment créer une configuration minimal pour un serveur web.
+Nous allons donc voir la syntax utilisé dans le fichier de configuration.
+Nous allons également essayé de comprendre les différentes directives qui vont permettre d&#8217;optimiser votre serveur web pour le traffique et ll&#8217;installation du hardware.
+On va créer des pages de test pour vérifier que la configuration est bonne.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Presentation de la syntaxe</li>
+<li>Configuration basique</li>
+<li>Etablir une configuration approprié</li>
+<li>Tester un site web</li>
+<li>Tester et maintenir le serveur</li>
+</ul>
+</div></blockquote>
+<div class="section" id="fichier-de-configuration">
+<h2>Fichier de configuration.<a class="headerlink" href="#fichier-de-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Le fichier de configuration se trouve à <code class="docutils literal"><span class="pre">/usr/local/nginx/conf/nginx.conf</span></code></p>
+<p>Voici le fichier de configuration par défaut:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#user  nobody;</span>
+worker_processes  1<span class="p">;</span>
+
+<span class="c">#error_log  logs/error.log;</span>
+<span class="c">#error_log  logs/error.log  notice;</span>
+<span class="c">#error_log  logs/error.log  info;</span>
+
+<span class="c">#pid        logs/nginx.pid;</span>
+
+
+events <span class="o">{</span>
+    worker_connections  1024<span class="p">;</span>
+<span class="o">}</span>
+
+
+http <span class="o">{</span>
+        include       mime.types<span class="p">;</span>
+        default_type  application/octet-stream<span class="p">;</span>
+
+        <span class="c">#log_format  main  &#39;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#39;</span>
+    <span class="c">#                  &#39;$status $body_bytes_sent &quot;$http_referer&quot; &#39;</span>
+        <span class="c">#                  &#39;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#39;;</span>
+
+        <span class="c">#access_log  logs/access.log  main;</span>
+
+        sendfile        on<span class="p">;</span>
+        <span class="c">#tcp_nopush     on;</span>
+
+        <span class="c">#keepalive_timeout  0;</span>
+        keepalive_timeout  65<span class="p">;</span>
+
+        <span class="c">#gzip  on;</span>
+
+        server <span class="o">{</span>
+                listen       80<span class="p">;</span>
+                server_name  localhost<span class="p">;</span>
+
+                <span class="c">#charset koi8-r;</span>
+
+                <span class="c">#access_log  logs/host.access.log  main;</span>
+
+                location / <span class="o">{</span>
+                        root   html<span class="p">;</span>
+                        index  index.html index.htm<span class="p">;</span>
+                <span class="o">}</span>
+
+                <span class="c">#error_page  404              /404.html;</span>
+
+                <span class="c"># redirect server error pages to the static page /50x.html</span>
+                <span class="c">#</span>
+                error_page   <span class="m">500</span> <span class="m">502</span> <span class="m">503</span> <span class="m">504</span>  /50x.html<span class="p">;</span>
+                <span class="nv">location</span> <span class="o">=</span> /50x.html <span class="o">{</span>
+                        root   html<span class="p">;</span>
+                <span class="o">}</span>
+
+                <span class="c"># proxy the PHP scripts to Apache listening on 127.0.0.1:80</span>
+                <span class="c">#</span>
+                <span class="c">#location ~ \.php$ {</span>
+                <span class="c">#    proxy_pass   http://127.0.0.1;</span>
+                <span class="c">#}</span>
+
+                <span class="c"># pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span>
+                <span class="c">#</span>
+                <span class="c">#location ~ \.php$ {</span>
+                <span class="c">#    root           html;</span>
+                <span class="c">#    fastcgi_pass   127.0.0.1:9000;</span>
+                <span class="c">#    fastcgi_index  index.php;</span>
+                <span class="c">#    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span>
+                <span class="c">#    include        fastcgi_params;</span>
+                <span class="c">#}</span>
+
+                <span class="c"># deny access to .htaccess files, if Apache&#39;s document root</span>
+                <span class="c"># concurs with nginx&#39;s one</span>
+                <span class="c">#</span>
+                <span class="c">#location ~ /\.ht {</span>
+                <span class="c">#    deny  all;</span>
+                <span class="c">#}</span>
+        <span class="o">}</span>
+
+        <span class="c"># another virtual host using mix of IP-, name-, and port-based configuration</span>
+        <span class="c">#</span>
+        <span class="c">#server {</span>
+        <span class="c">#    listen       8000;</span>
+        <span class="c">#    listen       somename:8080;</span>
+        <span class="c">#    server_name  somename  alias  another.alias;</span>
+
+        <span class="c">#    location / {</span>
+        <span class="c">#        root   html;</span>
+        <span class="c">#        index  index.html index.htm;</span>
+        <span class="c">#    }</span>
+        <span class="c">#}</span>
+
+        <span class="c"># HTTPS server</span>
+        <span class="c">#</span>
+        <span class="c">#server {</span>
+        <span class="c">#    listen       443 ssl;</span>
+        <span class="c">#    server_name  localhost;</span>
+
+        <span class="c">#    ssl_certificate      cert.pem;</span>
+        <span class="c">#    ssl_certificate_key  cert.key;</span>
+
+        <span class="c">#    ssl_session_cache    shared:SSL:1m;</span>
+        <span class="c">#    ssl_session_timeout  5m;</span>
+
+        <span class="c">#    ssl_ciphers  HIGH:!aNULL:!MD5;</span>
+        <span class="c">#    ssl_prefer_server_ciphers  on;</span>
+
+        <span class="c">#    location / {</span>
+        <span class="c">#        root   html;</span>
+        <span class="c">#        index  index.html index.htm;</span>
+        <span class="c">#    }</span>
+        <span class="c">#}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>La seconde ligne <code class="docutils literal"><span class="pre">worker_processes</span></code> est un directive, la valeur 1 indique que Nginx travail un seul <code class="docutils literal"><span class="pre">worker</span></code> processus. On voit que la directive finit par un <code class="docutils literal"><span class="pre">;</span></code></p>
+</div>
+<div class="section" id="organisation-et-inclusion">
+<h2>Organisation et inclusion.<a class="headerlink" href="#organisation-et-inclusion" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Ligne 16, on peut voir la directive <code class="docutils literal"><span class="pre">include</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre>include mime.types<span class="p">;</span>
+</pre></div>
+</div>
+<p>Comme son nom l&#8217;indique, cette directive va permettre d&#8217;inclure un fichier spécifique.
+Voici un petit exemple pour comprendre:</p>
+<div class="highlight-bash"><div class="highlight"><pre>nginx.conf:
+        user nginx nginx<span class="p">;</span>
+        worker_processes 4<span class="p">;</span>
+        include other_settings.conf<span class="p">;</span>
+
+other_settings.conf:
+        error_log logs/error.log<span class="p">;</span>
+        pid logs/nginx.pid<span class="p">;</span>
+</pre></div>
+</div>
+<p>Ce que Nginx va interpreter:</p>
+<div class="highlight-bash"><div class="highlight"><pre>user nginx nginx<span class="p">;</span>
+worker_processes 4<span class="p">;</span>
+error_log logs/error.log<span class="p">;</span>
+pid logs/nginx.pid<span class="p">;</span>
+</pre></div>
+</div>
+<p>Par défaut, l&#8217;insertion de sites ce fait de cette manière. On va utiliser la directive <code class="docutils literal"><span class="pre">&lt;mon_site&gt;.conf</span></code> ou:</p>
+<div class="highlight-bash"><div class="highlight"><pre>include sites/*.conf<span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="les-directives-en-bloque">
+<h2>Les directives en bloque.<a class="headerlink" href="#les-directives-en-bloque" title="Lien permanent vers ce titre">¶</a></h2>
+<p>On peut voir également dans le fichier par défaut, la directive <code class="docutils literal"><span class="pre">events</span></code>, celle-ce se présente en bloque:</p>
+<div class="highlight-bash"><div class="highlight"><pre>events <span class="o">{</span>
+        worker_connections 1024<span class="p">;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Ce bloque est définie par le module <code class="docutils literal"><span class="pre">events</span></code>. La directive</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table des Matières</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration basique de Nginx</a><ul>
+<li><a class="reference internal" href="#fichier-de-configuration">Fichier de configuration.</a></li>
+<li><a class="reference internal" href="#organisation-et-inclusion">Organisation et inclusion.</a></li>
+<li><a class="reference internal" href="#les-directives-en-bloque">Les directives en bloque.</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Sujet précédent</h4>
+  <p class="topless"><a href="Installation.html"
+                        title="Chapitre précédent">Installation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>Cette page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Basic_Config.txt"
+            rel="nofollow">Montrer le code source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Recherche rapide</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Saisissez un mot clef ou un nom de module, classe ou fonction.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Aurelazy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/Basic_Config.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>
