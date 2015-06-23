@@ -8,7 +8,7 @@
     
     <title>Configuration basique de Nginx &mdash; documentation Tuto_Nginx 0.1</title>
     
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -25,11 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/translations.js"></script>
     <link rel="top" title="documentation Tuto_Nginx 0.1" href="index.html" />
-    <link rel="prev" title="Installation" href="Installation.html" />
-   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
-
+    <link rel="prev" title="Installation" href="Installation.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -53,14 +49,14 @@
   <div class="section" id="configuration-basique-de-nginx">
 <h1>Configuration basique de Nginx<a class="headerlink" href="#configuration-basique-de-nginx" title="Lien permanent vers ce titre">¶</a></h1>
 <p>Dans ce chapitre, nous verrons comment créer une configuration minimal pour un serveur web.
-Nous allons donc voir la syntax utilisé dans le fichier de configuration.
-Nous allons également essayé de comprendre les différentes directives qui vont permettre d&#8217;optimiser votre serveur web pour le traffique et ll&#8217;installation du hardware.
+Nous allons donc voir la syntaxe utilisée dans le fichier de configuration.
+Nous allons également essayé de comprendre les différentes directives qui vont permettre d&#8217;optimiser votre serveur web pour le trafique et l&#8217;installation du hardware.
 On va créer des pages de test pour vérifier que la configuration est bonne.</p>
 <blockquote>
 <div><ul class="simple">
-<li>Presentation de la syntaxe</li>
+<li>Présentation de la syntaxe</li>
 <li>Configuration basique</li>
-<li>Etablir une configuration approprié</li>
+<li>Établir une configuration approprié</li>
 <li>Tester un site web</li>
 <li>Tester et maintenir le serveur</li>
 </ul>
@@ -205,7 +201,7 @@ other_settings.conf:
         pid logs/nginx.pid<span class="p">;</span>
 </pre></div>
 </div>
-<p>Ce que Nginx va interpreter:</p>
+<p>Ce que Nginx va interpréter:</p>
 <div class="highlight-bash"><div class="highlight"><pre>user nginx nginx<span class="p">;</span>
 worker_processes 4<span class="p">;</span>
 error_log logs/error.log<span class="p">;</span>
@@ -219,13 +215,236 @@ pid logs/nginx.pid<span class="p">;</span>
 </div>
 <div class="section" id="les-directives-en-bloque">
 <h2>Les directives en bloque.<a class="headerlink" href="#les-directives-en-bloque" title="Lien permanent vers ce titre">¶</a></h2>
-<p>On peut voir également dans le fichier par défaut, la directive <code class="docutils literal"><span class="pre">events</span></code>, celle-ce se présente en bloque:</p>
+<p>On peut voir également dans le fichier par défaut, la directive <code class="docutils literal"><span class="pre">events</span></code>, celle-ci se présente en bloque:</p>
 <div class="highlight-bash"><div class="highlight"><pre>events <span class="o">{</span>
         worker_connections 1024<span class="p">;</span>
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>Ce bloque est définie par le module <code class="docutils literal"><span class="pre">events</span></code>. La directive</p>
+<p>Ce bloque est définie par le module <code class="docutils literal"><span class="pre">events</span></code>. La directive <code class="docutils literal"><span class="pre">worker_connections</span></code> peut seulement être utilisé dans le bloque <code class="docutils literal"><span class="pre">events</span></code>.</p>
+<p>On peut également imbriquer des bloques les uns dans les autres:</p>
+<div class="highlight-bash"><div class="highlight"><pre>http <span class="o">{</span>
+        server <span class="o">{</span>
+                listen 80<span class="p">;</span>
+                server_name exemple.fr<span class="p">;</span>
+                acces_log /var/log/nginx/exemple.fr.log<span class="p">;</span>
+                location ^~ /admin/ <span class="o">{</span>
+                        index index.php<span class="p">;</span>
+                <span class="o">}</span>
+        <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Dans le bloque <code class="docutils literal"><span class="pre">http</span></code>, on peut déclarer plusieurs bloque <code class="docutils literal"><span class="pre">server</span></code>. Ces bloques <code class="docutils literal"><span class="pre">server</span></code> permettent de configurer des hôtes virtuelles.
+Nous verrons au fur et à mesure l&#8217;utilisation des bloques.</p>
+</div>
+<div class="section" id="les-directives-des-modules-noyau">
+<h2>Les directives des modules noyau.<a class="headerlink" href="#les-directives-des-modules-noyau" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous allons voir quelques modules qui vont permettre de paramétrer le noyau. Ces modules ne peuvent être utilisés qu&#8217;une seule fois, et doivent être placé dans la racine du fichier de configuration.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Nom et contexte</th>
+<th class="head">Syntaxe et description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>daemon</td>
+<td><p class="first">Valeurs acceptées: <em>on</em> ou <em>off</em></p>
+<p>Syntaxe: <em>daemon on;</em></p>
+<p>Valeur par défaut <em>on;</em></p>
+<p class="last">Active ou désactive le mode <em>daemon</em>. Si on le désactive, le programme
+ne démarrera pas en arrière plan; Il restera au premier plan lorsqu&#8217;il
+sera lancé depuis le shell. Peut-être utile pour débbuguer.</p>
+</td>
+</tr>
+<tr class="row-odd"><td>debug_points</td>
+<td><p class="first">Valeurs acceptés: <em>stop</em> ou <em>abort</em></p>
+<p>Syntaxe: <em>debug_points stop;</em></p>
+<p>Valeur par défaut: <em>None</em></p>
+<p class="last">Active un point de débbuguage.Il suffit d&#8217;utiliser <em>stop</em> pour interrompre
+l&#8217;application. Utiliser <em>abort</em> pour arrêter le point de débbuguage et
+fichier <code class="docutils literal"><span class="pre">core</span> <span class="pre">dump</span></code>.
+Pour désactiver cette option, ne tout simplement pas utiliser cette
+directive.</p>
+</td>
+</tr>
+<tr class="row-even"><td>env</td>
+<td><p class="first">Syntaxe: <em>env MY_VARIABLE;</em></p>
+<blockquote>
+<div><em>env MY_VARIABLE=my_value;</em></div></blockquote>
+<p class="last">Permet de (re)définir une variable d&#8217;environnement.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first">error_log</p>
+<p class="last">Contexte: main, http,
+server, et location</p>
+</td>
+<td><p class="first">Syntaxe: <em>error_log /file/path level;</em></p>
+<p>Valeur par défaut: logs/error.log error.</p>
+<p>Où <code class="docutils literal"><span class="pre">level</span></code> est une des valeurs suivantes: <em>debug</em>, <em>info</em>, <em>notice</em>,
+<em>warn</em>, <em>error</em>, et <em>crit</em> (du plus au moins détaillé: <em>debug</em> fourni
+les messages de logs fréquents, <em>crit</em> seulement les messages critiques).</p>
+<p>Active les messages d&#8217;erreur sur plusieurs niveaux: Application, HTTP
+serveur, hôte virtuel, et dossier de l&#8217;hôte virtuel.</p>
+<p>En redirigeant la sortie des logs vers <em>/dev/null/</em>, on peut désactiver
+les logs d&#8217;erreurs. En utilisant la directive suivante depuis la racine
+du fichier de configuration:</p>
+<blockquote class="last">
+<div><code class="docutils literal"><span class="pre">error_log</span> <span class="pre">/dev/null</span> <span class="pre">crit;</span></code></div></blockquote>
+</td>
+</tr>
+<tr class="row-even"><td>lock_file</td>
+<td><p class="first">Syntaxe: <em>File Path</em></p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">lock_file</span> <span class="pre">logs/nginx.lock;</span></code></div></blockquote>
+<p>Valeur par défaut: Définie au moment de la compilation.</p>
+<p class="last">Sur la plupart des OS cette directive est ignorée.</p>
+</td>
+</tr>
+<tr class="row-odd"><td><p class="first">log_not_found</p>
+<p class="last">Contexte: main, http,
+server, et location</p>
+</td>
+<td><p class="first">Valeurs acceptées: <em>on</em> ou <em>off</em></p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">log_not_found</span> <span class="pre">on;</span></code></div></blockquote>
+<p>Valeur par défaut: <em>on</em></p>
+<p class="last">Active ou désactive les logs pour les erreurs HTTP &#8220;404 not found&#8221;.
+Si les logs sont remplis avec des 404 à cause des <em>favicon.ico</em> ou
+<em>robots.txt</em>, on peut mettre à <em>off</em>.</p>
+</td>
+</tr>
+<tr class="row-even"><td>master_process</td>
+<td><p class="first">Valeurs acceptées: <em>on</em> ou <em>off</em></p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">master_process</span> <span class="pre">on;</span></code></div></blockquote>
+<p>Valeur par défaut: <em>on</em></p>
+<p class="last">Si activé, Nginx va démarrer plusieurs processus: un principal (le
+processus maître) et le processus <em>worker</em>. Si désactivé, Nginx travail
+avec un processus unique.</p>
+</td>
+</tr>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>Reste page 48 à 51 de <code class="docutils literal"><span class="pre">pcre_jit</span></code>  à <code class="docutils literal"><span class="pre">worker_aio_requests</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="les-modules-d-evenements">
+<h2>Les modules d&#8217;évenements.<a class="headerlink" href="#les-modules-d-evenements" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Les modules d&#8217;évènement vient avec des directives qui permet de configurer les mécanismes de réseau. Certains paramètres ont une impacte importante sur les performances.</p>
+<p>Toutes les directives de la liste suivante, doivent être placé dans le bloque <code class="docutils literal"><span class="pre">events</span></code>, qui doit être placé à la racine du fichier de configuration:</p>
+<div class="highlight-bash"><div class="highlight"><pre>user nginx nginx<span class="p">;</span>
+master_process on<span class="p">;</span>
+worker_processes 4<span class="p">;</span>
+events <span class="o">{</span>
+        worker_connections 1024<span class="p">;</span>
+        use epoll<span class="p">;</span>
+<span class="o">}</span>
+<span class="o">[</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Nom et contexte</th>
+<th class="head">Syntaxe et description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&nbsp;</td>
+<td>Reste page 52 à 53 de <code class="docutils literal"><span class="pre">accept_mutex</span></code>  à <code class="docutils literal"><span class="pre">worker_connections</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="les-modules-de-configuration">
+<h2>Les modules de configuration.<a class="headerlink" href="#les-modules-de-configuration" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Le module de configuration permet l&#8217;insertion de fichier grâce à la directive <code class="docutils literal"><span class="pre">include</span></code>.
+Cette directive peut être inséré n&#8217;importe où dans le fichier de configuration et accepte un seul paramètre - le chemin du fichier.</p>
+<div class="highlight-bash"><div class="highlight"><pre>include /file/path.conf<span class="p">;</span>
+include sites/*.conf<span class="p">;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Si aucun chemin absolue n&#8217;est défini,le chemin est relatif au dossier de configuration. Par défaut, <code class="docutils literal"><span class="pre">include</span> <span class="pre">sites/exemple.conf</span></code> va insérer le fichier: <code class="docutils literal"><span class="pre">/usr/local/nginx/conf/sites/exemple.conf</span></code>.</p>
+</div>
+</div>
+<div class="section" id="travailler-sur-la-configuration-par-defaut">
+<h2>Travailler sur la configuration par défaut.<a class="headerlink" href="#travailler-sur-la-configuration-par-defaut" title="Lien permanent vers ce titre">¶</a></h2>
+<div class="section" id="user">
+<h3>User<a class="headerlink" href="#user" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Par défaut:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#user nobody;</span>
+</pre></div>
+</div>
+<p>A changer par:</p>
+<div class="highlight-bash"><div class="highlight"><pre>user www-data www-data
+</pre></div>
+</div>
+</div>
+<div class="section" id="worker-processes">
+<h3>Worker_processes<a class="headerlink" href="#worker-processes" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Par défaut:</p>
+<div class="highlight-bash"><div class="highlight"><pre>worker_processes 1<span class="p">;</span>
+</pre></div>
+</div>
+<p>A changer par:</p>
+<div class="highlight-bash"><div class="highlight"><pre>worker_processes 4<span class="p">;</span>
+</pre></div>
+</div>
+<p>Permet d&#8217;utiliser les 4 cœurs de notre machine. A adapter suivant notre machine.</p>
+</div>
+<div class="section" id="log-not-found">
+<h3>Log_not_found<a class="headerlink" href="#log-not-found" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Permet de logger les erreurs 404 ou non. Il est fortement recommandé de le laisser à <em>on</em></p>
+<div class="highlight-bash"><div class="highlight"><pre>log_not_found on<span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="worker-connections">
+<h3>Worker_connections<a class="headerlink" href="#worker-connections" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Cette directive permet de définir le nombre de connections admises par le serveur. Il est en relation avec le <em>worker_processes</em>, 1 worker permet 1024 connections.</p>
+</div>
+</div>
+<div class="section" id="les-tests-de-perforance">
+<h2>Les tests de perforance.<a class="headerlink" href="#les-tests-de-perforance" title="Lien permanent vers ce titre">¶</a></h2>
+<p>Nous allons utiliser 3 outils pour tester les performances de notre serveur:</p>
+<blockquote>
+<div><ul class="simple">
+<li>httperf</li>
+<li>Autobench</li>
+<li>OpenWebLoad</li>
+</ul>
+</div></blockquote>
+<p>Ces outils vont permettre de générer de multiples requêtes HTTP pour étudier les résultats.</p>
+<div class="section" id="httperf">
+<h3>Httperf<a class="headerlink" href="#httperf" title="Lien permanent vers ce titre">¶</a></h3>
+<p>Httperf s&#8217;utilise en ligne de commande, on peut le trouver généralement dans les dépôts des distributions.
+Voici un exemple de commande:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>httperf --server 192.168.56.101 --port <span class="m">80</span> --uri /index.html --rate <span class="m">300</span> --num-conn <span class="m">30000</span> --num-call <span class="m">1</span> --timeout 5
+</pre></div>
+</div>
+<p>Voici à quoi correspond les différentes options:</p>
+<blockquote>
+<div><ul class="simple">
+<li>&#8211;server: Le site que l&#8217;on veut tester</li>
+<li>&#8211;uri: le chemin du fichier qui sera téléchargé</li>
+<li>&#8211;rate: Combien de requêtes par seconde</li>
+<li>&#8211;num-conn: le nombre de connections</li>
+<li>&#8211;num-call:combien de requêtes envoyées par connections</li>
+<li>&#8211;timeout nombre de seconde avant de considérer une requête perdu</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 </div>
 
@@ -241,6 +460,20 @@ pid logs/nginx.pid<span class="p">;</span>
 <li><a class="reference internal" href="#fichier-de-configuration">Fichier de configuration.</a></li>
 <li><a class="reference internal" href="#organisation-et-inclusion">Organisation et inclusion.</a></li>
 <li><a class="reference internal" href="#les-directives-en-bloque">Les directives en bloque.</a></li>
+<li><a class="reference internal" href="#les-directives-des-modules-noyau">Les directives des modules noyau.</a></li>
+<li><a class="reference internal" href="#les-modules-d-evenements">Les modules d&#8217;évenements.</a></li>
+<li><a class="reference internal" href="#les-modules-de-configuration">Les modules de configuration.</a></li>
+<li><a class="reference internal" href="#travailler-sur-la-configuration-par-defaut">Travailler sur la configuration par défaut.</a><ul>
+<li><a class="reference internal" href="#user">User</a></li>
+<li><a class="reference internal" href="#worker-processes">Worker_processes</a></li>
+<li><a class="reference internal" href="#log-not-found">Log_not_found</a></li>
+<li><a class="reference internal" href="#worker-connections">Worker_connections</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#les-tests-de-perforance">Les tests de perforance.</a><ul>
+<li><a class="reference internal" href="#httperf">Httperf</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -272,20 +505,21 @@ pid logs/nginx.pid<span class="p">;</span>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2015, Aurelazy.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
-      
-      |
-      <a href="_sources/Basic_Config.txt"
-          rel="nofollow">Page source</a></li>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="Index général"
+             >index</a></li>
+        <li class="right" >
+          <a href="Installation.html" title="Installation"
+             >précédent</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">documentation Tuto_Nginx 0.1</a> &raquo;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Aurelazy.
+      Créé avec <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
   </body>
 </html>
